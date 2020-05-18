@@ -96,7 +96,9 @@ impl<P: Atomic> Value<P> {
     pub fn metric(&self) -> Metric {
         let mut m = Metric::default();
         m.set_label(from_vec!(self.label_pairs.clone()));
-        m.set_timestamp_ms(SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs() as i64);
+        m.set_timestamp_ms(
+            (SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs() * 1000) as i64
+        );
 
         let val = self.get();
         match self.val_type {
