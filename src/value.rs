@@ -6,6 +6,8 @@ use crate::desc::{Desc, Describer};
 use crate::errors::{Error, Result};
 use crate::proto::{Counter, Gauge, LabelPair, Metric, MetricFamily, MetricType};
 
+use std::time::{SystemTime, UNIX_EPOCH};
+
 /// `ValueType` is an enumeration of metric types that represent a simple value
 /// for [`Counter`] and [`Gauge`].
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
@@ -94,6 +96,7 @@ impl<P: Atomic> Value<P> {
     pub fn metric(&self) -> Metric {
         let mut m = Metric::default();
         m.set_label(from_vec!(self.label_pairs.clone()));
+        m.set_timestamp_ms(SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs() as i64);
 
         let val = self.get();
         match self.val_type {
